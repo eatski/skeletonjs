@@ -7,6 +7,7 @@ interface CompareExpression {
     left: Comparable,
     right: Comparable
 }
+
 type Comparable = ComparableString | ComparableVariable | ComparableNumber
 
 interface ComparableString {
@@ -15,6 +16,7 @@ interface ComparableString {
 }
 
 interface ComparableVariable {
+    prefix:null | "!",
     type: "variable" 
     content: string
 }
@@ -25,6 +27,6 @@ interface ComparableNumber {
 }
 
 const parser = generate(readFileSync(__dirname + "/compare.peg").toString())
-export const parse = (text:string) : CompareExpression=> {
-    return parser.parse(text) as CompareExpression
+export const parse = (text:string) : CompareExpression | ComparableVariable=> {
+    return parser.parse(text) as CompareExpression | ComparableVariable
 }

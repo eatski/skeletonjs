@@ -1,11 +1,13 @@
-start = left:comparable _ infix:infix _ right:comparable {
+start = variable / compare
+
+compare = left:comparable _ infix:infix _ right:comparable {
     return  {
         type: "CompareExpression",
         infix,
         left,
         right
     }
-} 
+}
 comparable
     = number / string / variable
 number
@@ -23,12 +25,15 @@ string
         }
     }
 variable
-    = charset:[a-z]+ { 
+    = prefix:prefix charset:[a-z]+ { 
         return {
             type:"variable",
+            prefix,
             content:charset.join("")
         }
     }
+prefix
+    = [!]?
 infix
     = ">" / "<" / "==" / "!="
 

@@ -16,7 +16,29 @@ test("文字列と変数が異なる", () => {
         type: 'CompareExpression',
         infix: '!=',
         left: { type: 'string', content: 'aa' },
-        right: { type: 'variable', content: 'aa' }
+        right: { 
+            type: 'variable', 
+            prefix:null,
+            content: 'aa' 
+        }
+    }
+    expect(res).toEqual(expected)
+})
+test("変数単体 否定なし", () => {
+    const res = parse("aaaa")
+    const expected =  {
+        type:"variable",
+        prefix:null,
+        content:"aaaa"
+    }
+    expect(res).toEqual(expected)
+})
+test("変数単体 否定あり", () => {
+    const res = parse("!aaaa")
+    const expected =  {
+        type:"variable",
+        prefix:"!",
+        content:"aaaa"
     }
     expect(res).toEqual(expected)
 })
