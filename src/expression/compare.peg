@@ -1,0 +1,36 @@
+start = left:comparable _ infix:infix _ right:comparable {
+    return  {
+        type: "CompareExpression",
+        infix,
+        left,
+        right
+    }
+} 
+comparable
+    = number / string / variable
+number
+    = digits:[0-9]+ { 
+        return {
+            type:"number",
+            content:parseInt(digits.join(""))
+        }
+    }
+string
+    = "'" charset:[a-z]+ "'" { 
+        return {
+            type:"string",
+            content:charset.join("")
+        }
+    }
+variable
+    = charset:[a-z]+ { 
+        return {
+            type:"variable",
+            content:charset.join("")
+        }
+    }
+infix
+    = ">" / "<" / "==" / "!="
+
+_ "whitespace"
+  = [ \t\n\r]*
