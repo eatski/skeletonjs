@@ -47,21 +47,21 @@ const resolveSingleElement = (element:Element,context: SkContext):Element | Elem
         }
     }
     if(element.name === "sk:each"){
-        const ref = element.attributes && element.attributes["ref"];
-        const item = element.attributes && element.attributes["item"] 
-        if(typeof ref === "string" && typeof item === "string"){
+        const ref = element.attributes && element.attributes["in"];
+        const as = element.attributes && element.attributes["as"] 
+        if(typeof ref === "string" && typeof as === "string"){
             const variables = context.variables.getArrayValue(ref);
             return flatten(
                 variables.map(v => resolveElement(element.elements || [], {
                     ...context,
-                    variables:context.variables.addVariables({[item]:v})
+                    variables:context.variables.addVariables({[as]:v})
                 }))
             )
         }
         throw new Error(JSON.stringify(element))
     }
     if(element.name === "sk:if"){
-        const expression = element.attributes && element.attributes["expression"];
+        const expression = element.attributes && element.attributes["cond"];
         if(typeof expression === "string"){
             const parsed = parseExp(expression);
             const result = evalExpression(parsed,(name) => {
@@ -76,7 +76,6 @@ const resolveSingleElement = (element:Element,context: SkContext):Element | Elem
     if(element.name === undefined){
         return resolveElement(element.elements || [],context)
     }
-    logger.debug(`is this primitive??=>${JSON.stringify(element)}`)
     return resolvePrimitiveElement(element,context)
 }
 

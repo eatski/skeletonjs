@@ -1,0 +1,18 @@
+<div>
+    <h2>List Rendering</h2>
+    <ul>
+        <sk:each in="list" as="e" >
+            <li>{{e}}</li>
+        </sk:each>
+    </ul>
+    <h2>Conditional Rendering</h2>
+    <sk:if cond="flg">
+        <p>Flg is TRUE!!</p>
+    </sk:if>
+    <sk:if cond="!flg">
+        <p>Flg is FALSE!!</p>
+    </sk:if>
+    <sk:if cond="num > 5">
+        <p>Number is grater than 5</p>
+    </sk:if>
+</div>

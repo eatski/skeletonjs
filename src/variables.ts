@@ -14,9 +14,9 @@ export class VariablesWrapper {
         throw new Error(`Variable [${name}] not found or not text`);
     }
 
-    public getPrimitiveValue(name:string):string | boolean{
+    public getPrimitiveValue(name:string):string | boolean | number{
         const res = this.variables[name];
-        if(typeof res === "string" || typeof res === "boolean"){
+        if(typeof res === "string" || typeof res === "boolean" || typeof res === "number"){
             return  res;
         }
         throw new Error(`Variable [${name}] not found or not primitive`);
