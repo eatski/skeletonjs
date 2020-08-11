@@ -33,7 +33,7 @@ interface BoolValue {
     content: boolean
 }
 
-const parser = generate(readFileSync(__dirname + "/compare.peg").toString())
+const parser = generate(readFileSync(__dirname + "/compare.pegjs").toString())
 export const parse = (text:string) : InfixExpression | VariableValue=> {
     return parser.parse(text) as InfixExpression | VariableValue
 }
