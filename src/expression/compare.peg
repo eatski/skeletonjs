@@ -1,8 +1,8 @@
-start = variable / compare
+start = compare / variable
 
 compare = left:comparable _ infix:infix _ right:comparable {
     return  {
-        type: "CompareExpression",
+        type: "InfixExpression",
         infix,
         left,
         right
@@ -18,14 +18,14 @@ number
         }
     }
 string
-    = "'" charset:[a-z]+ "'" { 
+    = "'" charset:[A-z]+ "'" { 
         return {
             type:"string",
             content:charset.join("")
         }
     }
 variable
-    = prefix:prefix charset:[a-z]+ { 
+    = prefix:prefix charset:[A-z]+{ 
         return {
             type:"variable",
             prefix,
@@ -35,7 +35,7 @@ variable
 prefix
     = [!]?
 infix
-    = ">" / "<" / "==" / "!="
+    = ">" / "<" / "==" / "!=" 
 
 _ "whitespace"
   = [ \t\n\r]*

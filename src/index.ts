@@ -1,7 +1,8 @@
 import {xml2js,js2xml, Element} from "xml-js";
 import {flatten} from "lodash";
-import {parse} from "mustache"
-import { VariablesWrapper } from "./variables";
+import {parse} from "mustache";
+import {parse as parseExp, evalExpression} from "./expression"
+import { VariablesWrapper, Variables } from "./variables";
 import {getLogger} from "log4js";
 
 const logger = getLogger("skeletonjs")
@@ -11,7 +12,6 @@ logger.level = "debug"
 type SkContext = {
     variables:VariablesWrapper
 }
-type Variables = Record<string,string | string[] | undefined>
 
 const resolveText = (text:string,{variables}:SkContext):string => {
     return parse(text).map(cur => {
@@ -34,7 +34,7 @@ const resolvePrimitiveElement = (element:Element,context: SkContext):Element  =>
 const resolveElement = (elements:Element[],context: SkContext):Element[] => {
     return elements.reduce<Element[]>((prev,cur) => { 
         const res = resolveSingleElement(cur,context)
-        return  prev.concat(res instanceof Array ? res : [res]);
+        return prev.concat(res instanceof Array ? res : [res]);
     },[])
 }
 
@@ -57,6 +57,19 @@ const resolveSingleElement = (element:Element,context: SkContext):Element | Elem
                     variables:context.variables.addVariables({[item]:v})
                 }))
             )
+        }
+        throw new Error(JSON.stringify(element))
+    }
+    if(element.name === "sk:if"){
+        const expression = element.attributes && element.attributes["expression"];
+        if(typeof expression === "string"){
+            const parsed = parseExp(expression);
+            const result = evalExpression(parsed,(name) => {
+                return context.variables.getPrimitiveValue(name);
+            })
+            if(typeof result === "boolean"){
+                return result && element.elements ? resolveElement(element.elements,context) : []
+            }
         }
         throw new Error(JSON.stringify(element))
     } 

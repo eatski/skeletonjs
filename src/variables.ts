@@ -1,5 +1,5 @@
 
-export type Variables = Record<string,string | string[] | undefined>
+export type Variables = Record<string,string | string[] | undefined | boolean>
 
 export class VariablesWrapper {
     public constructor(
@@ -12,6 +12,14 @@ export class VariablesWrapper {
             return  res;
         }
         throw new Error(`Variable [${name}] not found or not text`);
+    }
+
+    public getPrimitiveValue(name:string):string | boolean{
+        const res = this.variables[name];
+        if(typeof res === "string" || typeof res === "boolean"){
+            return  res;
+        }
+        throw new Error(`Variable [${name}] not found or not primitive`);
     }
 
     public getArrayValue(name:string):string[] {
