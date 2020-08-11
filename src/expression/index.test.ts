@@ -3,7 +3,7 @@ import { parse, evalExpression } from "."
 test("文字列と数値が同じ値を持つ", () => {
     const res = parse("'aaa' == 3")
     const expected = {
-        type: 'InfixExpression',
+        type: 'ComparativeExpression',
         infix: '==',
         left: { type: 'string', content: 'aaa' },
         right: { type: 'number', content: 3 }
@@ -13,7 +13,7 @@ test("文字列と数値が同じ値を持つ", () => {
 test("文字列と変数が異なる", () => {
     const res = parse("'aa' != aa")
     const expected = {
-        type: 'InfixExpression',
+        type: 'ComparativeExpression',
         infix: '!=',
         left: { type: 'string', content: 'aa' },
         right: { 
@@ -46,7 +46,7 @@ test("変数単体 否定あり", () => {
 test("比較 等価", () => {
     const parsed = parse("'aaa' == hoge");
     const parseExpected =  {
-        type: 'InfixExpression',
+        type: 'ComparativeExpression',
         infix: '==',
         left: { type: 'string', content: 'aaa' },
         right: { type: 'variable', prefix:null, content: 'hoge' }
@@ -70,7 +70,7 @@ test("比較 等価", () => {
 test("比較 大小", () => {
     const parsed = parse("num > 1");
     const parseExpected =  {
-        type: 'InfixExpression',
+        type: 'ComparativeExpression',
         infix: '>',
         left: { type: 'variable', prefix:null, content: 'num' },
         right: { type: 'number', content: 1 }
@@ -94,7 +94,7 @@ test("比較 大小", () => {
 test("比較 大小 負の数", () => {
     const parsed = parse("num > -10");
     const parseExpected =  {
-        type: 'InfixExpression',
+        type: 'ComparativeExpression',
         infix: '>',
         left: { type: 'variable', prefix:null, content: 'num' },
         right: { type: 'number', content: -10 }

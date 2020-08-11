@@ -1,14 +1,14 @@
-Start = Compare / Variable
+Start = ComparativeExpression / ValueExpression
 
-Compare = left:ValueExp _ infix:Infix _ right:ValueExp {
+ComparativeExpression = left:ValueExpression _ infix:ComparativeOperator _ right:ValueExpression {
     return  {
-        type: "InfixExpression",
+        type: "ComparativeExpression",
         infix,
         left,
         right
     }
 }
-ValueExp
+ValueExpression
     = Number / String / Variable
 Number
     = digits:Digit {
@@ -19,13 +19,7 @@ Number
     }
 Digit
   = "0"
-  / [-]? NonZeroDigit DecimalDigit*
-
-DecimalDigit
-  = [0-9]
-
-NonZeroDigit
-  = [1-9]
+  / [-]? [1-9] [0-9]*
 
 String
     = "'" charset:[A-z]+ "'" { 
@@ -44,8 +38,8 @@ Variable
     }
 VariablePrefix
     = [!]?
-Infix
-    = ">" / "<" / "==" / "!=" 
+ComparativeOperator
+    = ">" / "<" / "==" / "!=" / ">=" / "<="
 
 
 _ "whitespace"

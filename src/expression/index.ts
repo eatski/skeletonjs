@@ -1,9 +1,9 @@
 import {generate} from "pegjs"
 import { readFileSync } from "fs"
 
-interface InfixExpression {
-    type: "InfixExpression",
-    infix: ">" | "<" | "==" | "!=",
+interface ComparativeExpression {
+    type: "ComparativeExpression",
+    infix: ">" | "<" | "==" | "!=" | ">=" | "<="
     left: Value,
     right: Value
 }
@@ -34,8 +34,8 @@ interface BoolValue {
 }
 
 const parser = generate(readFileSync(__dirname + "/compare.pegjs").toString())
-export const parse = (text:string) : InfixExpression | VariableValue=> {
-    return parser.parse(text) as InfixExpression | VariableValue
+export const parse = (text:string) : ComparativeExpression | VariableValue=> {
+    return parser.parse(text) as ComparativeExpression | VariableValue
 }
 
 interface ResolveVariable {
@@ -73,16 +73,16 @@ export const evalValueExpression = (value:Value,resolve:ResolveVariable):StaticV
     }
 }
 
-export const evalExpression = (exp:InfixExpression | Value,resolve:ResolveVariable): string | number | boolean => {
+export const evalExpression = (exp:ComparativeExpression | Value,resolve:ResolveVariable): string | number | boolean => {
     switch (exp.type) {
-        case "InfixExpression":
-            return evalInfixExpression(exp,resolve);
+        case "ComparativeExpression":
+            return evalComparativeExpression(exp,resolve);
         default:
             return evalValueExpression(exp,resolve).content;
     }
 } 
 
-export const evalInfixExpression = (exp:InfixExpression,resolve:ResolveVariable): string | number | boolean => {
+export const evalComparativeExpression = (exp:ComparativeExpression,resolve:ResolveVariable): string | number | boolean => {
     const left = evalValueExpression(exp.left,resolve);
     const right = evalValueExpression(exp.right,resolve);
     switch (exp.infix) {
@@ -94,5 +94,9 @@ export const evalInfixExpression = (exp:InfixExpression,resolve:ResolveVariable)
             return left.content > right.content
         case　"<":
             return left.content < right.content
+        case ">=":
+            return left.content >= right.content
+        case "<=":
+            return left.content <= right.content
     }
 }
