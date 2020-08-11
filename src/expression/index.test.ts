@@ -91,3 +91,27 @@ test("比較 大小", () => {
     });
     expect(evaled2).toBe(false)
 })
+test("比較 大小 負の数", () => {
+    const parsed = parse("num > -10");
+    const parseExpected =  {
+        type: 'InfixExpression',
+        infix: '>',
+        left: { type: 'variable', prefix:null, content: 'num' },
+        right: { type: 'number', content: -10 }
+    }
+    expect(parsed).toEqual(parseExpected)
+    const evaled1 = evalExpression(parsed, (name) => {
+        if(name !== 'num'){
+            throw new Error();
+        }
+        return -9
+    });
+    expect(evaled1).toBe(true)
+    const evaled2 = evalExpression(parsed, (name) => {
+        if(name !== 'num'){
+            throw new Error();
+        }
+        return -10
+    });
+    expect(evaled2).toBe(false)
+})

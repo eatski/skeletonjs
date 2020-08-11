@@ -1,6 +1,6 @@
-start = compare / variable
+Start = Compare / Variable
 
-compare = left:comparable _ infix:infix _ right:comparable {
+Compare = left:ValueExp _ infix:Infix _ right:ValueExp {
     return  {
         type: "InfixExpression",
         infix,
@@ -8,34 +8,45 @@ compare = left:comparable _ infix:infix _ right:comparable {
         right
     }
 }
-comparable
-    = number / string / variable
-number
-    = digits:[0-9]+ { 
+ValueExp
+    = Number / String / Variable
+Number
+    = digits:Digit {
         return {
             type:"number",
             content:parseInt(digits.join(""))
         }
     }
-string
+Digit
+  = "0"
+  / [-]? NonZeroDigit DecimalDigit*
+
+DecimalDigit
+  = [0-9]
+
+NonZeroDigit
+  = [1-9]
+
+String
     = "'" charset:[A-z]+ "'" { 
         return {
             type:"string",
             content:charset.join("")
         }
     }
-variable
-    = prefix:prefix charset:[A-z]+{ 
+Variable
+    = prefix:VariablePrefix charset:[A-z]+{ 
         return {
             type:"variable",
             prefix,
             content:charset.join("")
         }
     }
-prefix
+VariablePrefix
     = [!]?
-infix
+Infix
     = ">" / "<" / "==" / "!=" 
+
 
 _ "whitespace"
   = [ \t\n\r]*
