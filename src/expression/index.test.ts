@@ -11,11 +11,11 @@ test("文字列と数値が同じ値を持つ", () => {
     expect(res).toEqual(expected)
 })
 test("文字列と変数が異なる", () => {
-    const res = parse("'aa' != aa")
+    const res = parse("'山田 太郎' != aa")
     const expected = {
         type: 'StringComparativeExpression',
         infix: '!=',
-        left: { type: 'string', value: 'aa' },
+        left: { type: 'string', value: '山田 太郎' },
         right: { 
             type: 'variable', 
             prefix:null,

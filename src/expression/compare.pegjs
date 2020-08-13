@@ -83,12 +83,16 @@ NumberValue
 Digit = "0" / [-]? [1-9] [0-9]*
 
 StringValue
-    = "'" charset:[A-z]+ "'" { 
+    = "'" charset:Char+ "'" { 
         return {
             type:"string",
             value:charset.join("")
         }
     }
+
+
+
+Char = [^']
 
 
 Keywords = 
