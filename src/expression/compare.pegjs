@@ -1,35 +1,113 @@
-Start = ComparativeExpression / ValueExpression
+Start = ComparativeExpression / AdditiveExpression / Value
 
-ComparativeExpression = left:ValueExpression _ infix:ComparativeOperator _ right:ValueExpression {
+// ComparativeExpression
+
+ComparativeExpression = 
+    AmbiguousComparativeExpression /
+    NumberComparativeExpression / 
+    StringComparativeExpression /
+    BoolComparativeExpression 
+
+NumberComparativeExpression = left:Computable _ infix:NumberComparativeOperator _ right:Computable {
     return  {
-        type: "ComparativeExpression",
+        type: "NumberComparativeExpression",
         infix,
         left,
         right
     }
 }
-ValueExpression
-    = Number / String / Variable
-Number
+
+AmbiguousComparativeExpression = left:AnyValue _ infix:EqualityOperator _ right:AnyValue {
+    return  {
+        type: "AmbiguousComparativeExpression",
+        infix,
+        left,
+        right
+    }
+}
+
+StringComparativeExpression = left:Stringified _ infix:EqualityOperator _ right:Stringified {
+    return  {
+        type: "StringComparativeExpression",
+        infix,
+        left,
+        right
+    }
+}
+
+BoolComparativeExpression = left:BoolValue / AnyValue _ infix:EqualityOperator _ right:Logical {
+    return  {
+        type: "BoolComparativeExpression",
+        infix,
+        left,
+        right
+    }
+}
+
+EqualityOperator
+    = "==" / "!="
+NumberComparativeOperator
+    = EqualityOperator / ">" / "<" / ">=" / "<="
+
+
+// AdditiveExpression
+
+Additive = NumberValue / AnyValue
+Computable = AdditiveExpression / Additive
+Stringified = StringValue / AnyValue
+Logical = ComparativeExpression / BoolValue / AnyValue
+
+
+AdditiveExpression = left:Additive _ infix:AdditiveOperator _ right:Computable {
+    return {
+        type: "AdditiveExpression",
+        infix,
+        left,
+        right
+    }
+}
+
+AdditiveOperator
+    = "+" / "-"
+
+// Value
+Value = NumberValue / StringValue / BoolValue / AnyValue
+
+NumberValue
     = digits:Digit {
         return {
             type:"number",
             content:parseInt(digits.join(""))
         }
     }
-Digit
-  = "0"
-  / [-]? [1-9] [0-9]*
+Digit = "0" / [-]? [1-9] [0-9]*
 
-String
+StringValue
     = "'" charset:[A-z]+ "'" { 
         return {
             type:"string",
             content:charset.join("")
         }
     }
+
+
+Keywords = 
+    BoolLiteral 
+
+BoolValue 
+    = bool:BoolLiteral {
+        return {
+            type:"boolean",
+            content: bool === "true"
+        }
+    }
+BoolLiteral
+    = "true" / "false"
+
+AnyValue
+    = Variable
 Variable
-    = prefix:VariablePrefix charset:[A-z]+{ 
+    = &Keywords / prefix:VariablePrefix charset:[A-z]+{ 
         return {
             type:"variable",
             prefix,
@@ -38,8 +116,8 @@ Variable
     }
 VariablePrefix
     = [!]?
-ComparativeOperator
-    = ">" / "<" / "==" / "!=" / ">=" / "<="
+
+
 
 
 _ "whitespace"

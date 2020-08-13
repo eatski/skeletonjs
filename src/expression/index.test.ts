@@ -1,19 +1,19 @@
 import { parse, evalExpression } from "."
 
 test("文字列と数値が同じ値を持つ", () => {
-    const res = parse("'aaa' == 3")
+    const res = parse("'aaa' == 'aa'")
     const expected = {
-        type: 'ComparativeExpression',
+        type: 'StringComparativeExpression',
         infix: '==',
         left: { type: 'string', content: 'aaa' },
-        right: { type: 'number', content: 3 }
+        right: { type: 'string', content: 'aa' }
     }
     expect(res).toEqual(expected)
 })
 test("文字列と変数が異なる", () => {
     const res = parse("'aa' != aa")
     const expected = {
-        type: 'ComparativeExpression',
+        type: 'StringComparativeExpression',
         infix: '!=',
         left: { type: 'string', content: 'aa' },
         right: { 
@@ -46,72 +46,94 @@ test("変数単体 否定あり", () => {
 test("比較 等価", () => {
     const parsed = parse("'aaa' == hoge");
     const parseExpected =  {
-        type: 'ComparativeExpression',
+        type: 'StringComparativeExpression',
         infix: '==',
         left: { type: 'string', content: 'aaa' },
         right: { type: 'variable', prefix:null, content: 'hoge' }
     }
     expect(parsed).toEqual(parseExpected)
-    const evaled1 = evalExpression(parsed, (name) => {
-        if(name !== 'hoge'){
-            throw new Error();
-        }
-        return "aaa"
-    });
+    const evaled1 = evalExpression(parsed, name => name === 'hoge' ? "aaa" : undefined);
     expect(evaled1).toBe(true)
-    const evaled2 = evalExpression(parsed, (name) => {
-        if(name !== 'hoge'){
-            throw new Error();
-        }
-        return "aai"
-    });
+    const evaled2 = evalExpression(parsed, name => name === 'hoge' ? "aai" : undefined);
     expect(evaled2).toBe(false)
 })
 test("比較 大小", () => {
     const parsed = parse("num > 1");
     const parseExpected =  {
-        type: 'ComparativeExpression',
+        type: 'NumberComparativeExpression',
         infix: '>',
         left: { type: 'variable', prefix:null, content: 'num' },
         right: { type: 'number', content: 1 }
     }
     expect(parsed).toEqual(parseExpected)
-    const evaled1 = evalExpression(parsed, (name) => {
-        if(name !== 'num'){
-            throw new Error();
-        }
-        return 2
-    });
+    const evaled1 = evalExpression(parsed, name => name === 'num' ? 2 : undefined);
     expect(evaled1).toBe(true)
-    const evaled2 = evalExpression(parsed, (name) => {
-        if(name !== 'num'){
-            throw new Error();
-        }
-        return 1
-    });
+    const evaled2 = evalExpression(parsed, name => name === 'num' ? 1 : undefined);
     expect(evaled2).toBe(false)
 })
 test("比較 大小 負の数", () => {
     const parsed = parse("num > -10");
     const parseExpected =  {
-        type: 'ComparativeExpression',
+        type: 'NumberComparativeExpression',
         infix: '>',
         left: { type: 'variable', prefix:null, content: 'num' },
         right: { type: 'number', content: -10 }
     }
     expect(parsed).toEqual(parseExpected)
-    const evaled1 = evalExpression(parsed, (name) => {
-        if(name !== 'num'){
-            throw new Error();
-        }
-        return -9
-    });
+    const evaled1 = evalExpression(parsed, name => name === 'num' ? -9 : undefined);
     expect(evaled1).toBe(true)
-    const evaled2 = evalExpression(parsed, (name) => {
-        if(name !== 'num'){
-            throw new Error();
-        }
-        return -10
-    });
+    const evaled2 = evalExpression(parsed, name => name === 'num' ? -10 : undefined);
     expect(evaled2).toBe(false)
+})
+test("比較 文法エラー", () => {
+    expect(() => parse("'aaa' > -10")).toThrowError()
+    expect(() => parse("false > -10")).toThrowError()
+})
+test("True False",() => {
+    const parsedFalse = parse("false");
+    const parseExpectedFalse =  { type: 'boolean', content: false }
+    expect(parsedFalse).toEqual(parseExpectedFalse);
+    const parsedTrue = parse("true");
+    const parseExpectedTrue =  { type: 'boolean', content: true }
+    expect(parsedTrue).toEqual(parseExpectedTrue);
+})
+test("加算", () => {
+    const parsed = parse("num + -10");
+    const parseExpected =  {
+        type: 'AdditiveExpression',
+        infix: '+',
+        left: { type: 'variable', prefix:null, content: 'num' },
+        right: { type: 'number', content: -10 }
+    }
+    expect(parsed).toEqual(parseExpected)
+    const evaled1 = evalExpression(parsed, name => name === 'num' ? 15 : undefined);
+    expect(evaled1).toBe(5)
+    const evaled2 = evalExpression(parsed, name => name === 'num' ? -10 : undefined);
+    expect(evaled2).toBe(-20)
+})
+
+test("加算3つ", () => {
+    const parsed = parse("num + -10 - 1");
+    const parseExpected =  {
+        type: 'AdditiveExpression',
+        infix: '+',
+        left: { type: 'variable', prefix:null, content: 'num' },
+        right: { 
+            type: 'AdditiveExpression', 
+            infix: '-',
+            left: {
+                type:"number",
+                content:-10
+            },
+            right: {
+                type:"number",
+                content:1
+            }
+        }
+    }
+    expect(parsed).toEqual(parseExpected)
+    const evaled1 = evalExpression(parsed, name => name === 'num' ? 15 : undefined);
+    expect(evaled1).toBe(4)
+    const evaled2 = evalExpression(parsed, name => name === 'num' ? -10 : undefined);
+    expect(evaled2).toBe(-21)
 })
