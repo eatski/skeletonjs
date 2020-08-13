@@ -77,7 +77,7 @@ NumberValue
     = digits:Digit {
         return {
             type:"number",
-            content:parseInt(digits.join(""))
+            value:parseInt(digits.join(""))
         }
     }
 Digit = "0" / [-]? [1-9] [0-9]*
@@ -86,7 +86,7 @@ StringValue
     = "'" charset:[A-z]+ "'" { 
         return {
             type:"string",
-            content:charset.join("")
+            value:charset.join("")
         }
     }
 
@@ -98,7 +98,7 @@ BoolValue
     = bool:BoolLiteral {
         return {
             type:"boolean",
-            content: bool === "true"
+            value: bool === "true"
         }
     }
 BoolLiteral
@@ -111,7 +111,7 @@ Variable
         return {
             type:"variable",
             prefix,
-            content:charset.join("")
+            value:charset.join("")
         }
     }
 VariablePrefix

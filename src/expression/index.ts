@@ -6,11 +6,11 @@ type Expression = ComparativeExpression | Value | AdditiveExpression
 export const evalExpression = (exp:Expression | Value,resolve:VariableResolver): string | number | boolean => {
     switch (exp.type) {
         case "string":
-            return exp.content;
+            return exp.value;
         case "number":
-            return exp.content;
+            return exp.value;
         case "boolean":
-            return exp.content;
+            return exp.value;
         case "variable":
             return evalVariableValue(exp,resolve);
         case "AmbiguousComparativeExpression":
@@ -124,23 +124,23 @@ type Computable = VariableValue | NumberValue | AdditiveExpression
 
 interface StringValue {
     type: "string" 
-    content: string
+    value: string
 }
 
 interface VariableValue {
     prefix:null | "!",
     type: "variable" 
-    content: string
+    value: string
 }
 
 interface NumberValue {
     type: "number" 
-    content: number
+    value: number
 }
 
 interface BoolValue {
     type: "boolean" 
-    content: boolean
+    value: boolean
 }
 
 interface VariableResolver {
@@ -150,7 +150,7 @@ interface VariableResolver {
 const evalComputable = (computable:Computable,resolve:VariableResolver):number => {
     switch (computable.type) {
         case "number":            
-            return computable.content;
+            return computable.value;
         case "variable":
             return evalVariableValueAsNumber(computable,resolve);
         case "AdditiveExpression":
@@ -161,7 +161,7 @@ const evalComputable = (computable:Computable,resolve:VariableResolver):number =
 const evalStringified = (str:Stringified,resolve:VariableResolver):string => {
     switch (str.type) {
         case "string":            
-            return str.content;
+            return str.value;
         case "variable":
             return evalVariableValueAsString(str,resolve);
     }
@@ -170,7 +170,7 @@ const evalStringified = (str:Stringified,resolve:VariableResolver):string => {
 const evalLogical =  (logical:Logical,resolve:VariableResolver):boolean => {
     switch (logical.type) {
         case "boolean":            
-            return logical.content;
+            return logical.value;
         case "variable":
             return evalVariableValueAsBoolean(logical,resolve);
         default :
@@ -179,41 +179,41 @@ const evalLogical =  (logical:Logical,resolve:VariableResolver):boolean => {
 }
 
 const evalVariableValueAsNumber = (variable:VariableValue,resolve:VariableResolver):number => {
-    const value = resolve(variable.content)
+    const value = resolve(variable.value)
     if(typeof value === "undefined"){
-        throw new Error(`[${variable.content}] is undefined.`)
+        throw new Error(`[${variable.value}] is undefined.`)
     }
     if(typeof value === "number"){
         return value;
     }
-    throw new Error(`[${variable.content}] is not number.`)
+    throw new Error(`[${variable.value}] is not number.`)
 }
 const evalVariableValueAsString = (variable:VariableValue,resolve:VariableResolver):string => {
-    const value = resolve(variable.content)
+    const value = resolve(variable.value)
     if(typeof value === "undefined"){
-        throw new Error(`[${variable.content}] is undefined.`)
+        throw new Error(`[${variable.value}] is undefined.`)
     }
     if(typeof value === "string"){
         return value;
     }
-    throw new Error(`[${variable.content}] is not string.`)
+    throw new Error(`[${variable.value}] is not string.`)
 }
 
 const evalVariableValueAsBoolean = (variable:VariableValue,resolve:VariableResolver):boolean => {
-    const value = resolve(variable.content)
+    const value = resolve(variable.value)
     if(typeof value === "undefined"){
-        throw new Error(`[${variable.content}] is undefined.`)
+        throw new Error(`[${variable.value}] is undefined.`)
     }
     if(typeof value === "boolean"){
         return variable.prefix === "!" ? !value : value;
     }
-    throw new Error(`[${variable.content}] is not boolean.`)
+    throw new Error(`[${variable.value}] is not boolean.`)
 }
 
 const evalVariableValue = (variable:VariableValue,resolve:VariableResolver):number | boolean | string=> {
-    const value = resolve(variable.content)
+    const value = resolve(variable.value)
     if(typeof value === "undefined"){
-        throw new Error(`[${variable.content}] is undefined.`)
+        throw new Error(`[${variable.value}] is undefined.`)
     }
     if(typeof value === "boolean"){
         return variable.prefix === "!" ? !value : value;
