@@ -137,3 +137,8 @@ test("加算3つ", () => {
     const evaled2 = evalExpression(parsed, name => name === 'num' ? -10 : undefined);
     expect(evaled2).toBe(-21)
 })
+
+test("乗算",() => {
+    const parsed = parse("num * 2 * 1");
+    console.log(parsed)
+})

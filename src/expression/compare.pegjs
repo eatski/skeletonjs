@@ -1,4 +1,35 @@
-Start = ComparativeExpression / AdditiveExpression / Value
+{
+    
+    function getType(exp) {
+        const dict = {
+            "number":"number",
+            "MultiplicativeExpression" : "number",
+            "AdditiveExpression":"number",
+            "variable":"variable"
+        }
+        const asis = dict[exp.type];
+        if(!asis){
+            throw new Error("型が登録されてないよ")
+        }
+        return asis;
+    }
+    function expectType(exp,tobe){
+        const asis = getType(exp);
+        if(asis !== tobe && asis !== "any"){
+            throw new Error("Invarid Type")
+        }
+    }
+    function isComparable(left,right){
+        const leftType = getType(left);
+        const rightType = getType(right);
+        return leftType == "any" || rightType == "any" || leftType == rightType
+    }
+}
+
+
+Start = ComparativeExpression / AdditiveExpression / MultiplicativeExpression / Value
+
+//Value > Grouping > Function > Multiplication > Addition > NumericalComparison > Equality
 
 // ComparativeExpression
 
@@ -44,60 +75,116 @@ BoolComparativeExpression = left:BoolValue / AnyValue _ infix:EqualityOperator _
     }
 }
 
-EqualityOperator
-    = "==" / "!="
+
 NumberComparativeOperator
     = EqualityOperator / ">" / "<" / ">=" / "<="
 
+// EquivalenceComparison
+EquivalenceComparisonExpression
+    = left:EquivalenceComparable _ infix:EqualityOperator _ right:(EquivalenceComparisonExpression / EquivalenceComparable) {
+        const leftType = getType(left);
+        const rightType = getType(right);
+        if(leftType == "any" && rightType == "variable"){
+            return {
+                type: "AmbiguousEquivalenceComparisonExpression",
+                infix,
+                left,
+                right
+            }
+        }
+        if((leftType == "string" && rightType == "string") || (leftType == "variable" && rightType == "string") || (leftType == "string" && rightType == "variable")){
+            return {
+                type: "StringEquivalenceComparisonExpression",
+                infix,
+                left,
+                right
+            }
+        }
+        return  {
+            type: "EquivalenceComparisonExpression",
+            infix,
+            left,
+            right
+        }
+    }
 
-// AdditiveExpression
+EquivalenceComparable = NumericalComparisonExpression / NumericalComparable
+EqualityOperator
+    = "==" / "!="
+
+// NumericalComparison
+NumericalComparisonExpression 
+    = left: NumericalComparable _ infix:NumericalComparisonOperator _ right:(NumericalComparisonExpression / NumericalComparable) {
+        expectType(left,"number")
+        expectType(right,"number")
+        return  {
+            type: "NumericalComparisonExpression",
+            infix,
+            left,
+            right
+        }
+    }
+
+NumericalComparable = AdditiveExpression / Addable
+NumericalComparisonOperator = ">" / "<" / ">=" / "<="
+
+// Addition
 
 Additive = NumberValue / AnyValue
 Computable = AdditiveExpression / Additive
 Stringified = StringValue / AnyValue
 Logical = ComparativeExpression / BoolValue / AnyValue
 
-
-AdditiveExpression = left:Additive _ infix:AdditiveOperator _ right:Computable {
-    return {
-        type: "AdditiveExpression",
-        infix,
-        left,
-        right
+AdditiveExpression 
+    = left:Addable _ infix:AdditiveOperator _ right:(AdditiveExpression / Addable) {
+        expectType(left,"number")
+        expectType(right,"number")
+        return {
+            type: "AdditiveExpression",
+            infix,
+            left,
+            right
+        }
     }
-}
+
+Addable = MultiplicativeExpression / Value
 
 AdditiveOperator
     = "+" / "-"
+
+// Multiplicative
+MultiplicativeExpression
+    = left:Multiplicable _ infix:MultiplicativeOperator _ right:(MultiplicativeExpression / Multiplicable) {
+        expectType(left,"number")
+        expectType(right,"number")
+        return  {
+            type: "MultiplicativeExpression",
+            infix,
+            left,
+            right
+        }
+    }
+Multiplicable = Value
+MultiplicativeOperator = "*" / "/" / "%"
 
 // Value
 Value = NumberValue / StringValue / BoolValue / AnyValue
 
 NumberValue
-    = digits:Digit {
+    = digits:DigitLiteral {
         return {
             type:"number",
             value:parseInt(digits.join(""))
         }
     }
-Digit = "0" / [-]? [1-9] [0-9]*
 
 StringValue
-    = "'" charset:Char+ "'" { 
+    = "'" charset:CharLiteral+ "'" { 
         return {
             type:"string",
             value:charset.join("")
         }
     }
-
-
-
-Char = [^']
-
-
-Keywords = 
-    BoolLiteral 
-
 BoolValue 
     = bool:BoolLiteral {
         return {
@@ -105,8 +192,6 @@ BoolValue
             value: bool === "true"
         }
     }
-BoolLiteral
-    = "true" / "false"
 
 AnyValue
     = Variable
@@ -121,6 +206,11 @@ Variable
 VariablePrefix
     = [!]?
 
+//Literal
+Keywords = BoolLiteral 
+BoolLiteral = "true" / "false"
+DigitLiteral = "0" / [-]? [1-9] [0-9]*
+CharLiteral = [^']
 
 
 
