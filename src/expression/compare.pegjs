@@ -15,14 +15,14 @@
     }
     function expectType(exp,tobe){
         const asis = getType(exp);
-        if(asis !== tobe && asis !== "any"){
+        if(asis !== tobe && asis !== "variable"){
             throw new Error("Invarid Type")
         }
     }
     function isComparable(left,right){
         const leftType = getType(left);
         const rightType = getType(right);
-        return leftType == "any" || rightType == "any" || leftType == rightType
+        return leftType == "variable" || rightType == "variable" || leftType == rightType
     }
 }
 
@@ -84,7 +84,7 @@ EquivalenceComparisonExpression
     = left:EquivalenceComparable _ infix:EqualityOperator _ right:(EquivalenceComparisonExpression / EquivalenceComparable) {
         const leftType = getType(left);
         const rightType = getType(right);
-        if(leftType == "any" && rightType == "variable"){
+        if(leftType == "variable" && rightType == "variable"){
             return {
                 type: "AmbiguousEquivalenceComparisonExpression",
                 infix,
