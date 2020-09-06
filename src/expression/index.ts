@@ -1,5 +1,6 @@
 import {generate} from "pegjs"
 import { readFileSync } from "fs"
+import {parse} from "./parse"
 
 type Expression = ComparativeExpression | Value | AdditiveExpression
 
@@ -243,12 +244,7 @@ const evalAdditiveExpression = (exp:AdditiveExpression,resolve:VariableResolver)
 
 type Value = StringValue | VariableValue | NumberValue | BoolValue
 
-
-const parser = generate(readFileSync(__dirname + "/compare.pegjs").toString())
-export const parse = (text:string) => {
-    return parser.parse(text) as Expression
-}
-
+export {parse}
 
 
 
