@@ -26,80 +26,13 @@
     }
 }
 
-
 Start = EquivalenceComparisonExpression / EquivalenceComparable
 
 //Value > Grouping > Function > Multiplication > Addition > NumericalComparison > Equality
 
-// ComparativeExpression
-
-// ComparativeExpression = 
-//     AmbiguousComparativeExpression /
-//     NumberComparativeExpression / 
-//     StringComparativeExpression /
-//     BoolComparativeExpression 
-
-// NumberComparativeExpression = left:Computable _ infix:NumberComparativeOperator _ right:Computable {
-//     return  {
-//         type: "NumberComparativeExpression",
-//         infix,
-//         left,
-//         right
-//     }
-// }
-
-// AmbiguousComparativeExpression = left:AnyValue _ infix:EqualityOperator _ right:AnyValue {
-//     return  {
-//         type: "AmbiguousComparativeExpression",
-//         infix,
-//         left,
-//         right
-//     }
-// }
-
-// StringComparativeExpression = left:Stringified _ infix:EqualityOperator _ right:Stringified {
-//     return  {
-//         type: "StringComparativeExpression",
-//         infix,
-//         left,
-//         right
-//     }
-// }
-
-// BoolComparativeExpression = left:BoolValue / AnyValue _ infix:EqualityOperator _ right:Logical {
-//     return  {
-//         type: "BoolComparativeExpression",
-//         infix,
-//         left,
-//         right
-//     }
-// }
-
-
-// NumberComparativeOperator
-//     = EqualityOperator / ">" / "<" / ">=" / "<="
-
 // EquivalenceComparison
 EquivalenceComparisonExpression
     = left:EquivalenceComparable _ infix:EqualityOperator _ right:(EquivalenceComparisonExpression / EquivalenceComparable) {
-        // const leftType = getType(left);
-        // const rightType = getType(right);
-        // if(leftType == "variable" && rightType == "variable"){
-        //     return {
-        //         type: "AmbiguousEquivalenceComparisonExpression",
-        //         infix,
-        //         left,
-        //         right
-        //     }
-        // }
-        // if((leftType == "string" && rightType == "string") || (leftType == "variable" && rightType == "string") || (leftType == "string" && rightType == "variable")){
-        //     return {
-        //         type: "StringEquivalenceComparisonExpression",
-        //         infix,
-        //         left,
-        //         right
-        //     }
-        // }
         return  {
             type: "EquivalenceComparisonExpression",
             infix,
@@ -129,11 +62,6 @@ NumericalComparable = AdditiveExpression / Addable
 NumericalComparisonOperator = ">" / "<" / ">=" / "<="
 
 // Addition
-
-// Additive = NumberValue / AnyValue
-// Computable = AdditiveExpression / Additive
-// Stringified = StringValue / AnyValue
-// Logical = ComparativeExpression / BoolValue / AnyValue
 
 AdditiveExpression 
     = left:Addable _ infix:AdditiveOperator _ right:(AdditiveExpression / Addable) {
