@@ -1,8 +1,7 @@
 import {xml2js,js2xml, Element} from "xml-js";
 import {flatten} from "lodash";
 import {parse} from "mustache";
-import {evalExpression} from "./expression/evaluate"
-import {parse as parseExp} from "./expression/parse"
+import {evalExpression,parse as parseExp} from "node-mel"
 import { VariablesWrapper, Variables } from "./variables";
 import {getLogger} from "log4js";
 

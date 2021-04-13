@@ -25,6 +25,7 @@
     "lodash-es": "^4.17.15",
     "log4js": "^6.3.0",
     "mustache": "^4.0.1",
+    "node-mel": "0.0.0-alpha.ee7f3a9e224193ec66631e7f28c2e8dce2884533",
     "pegjs": "^0.10.0",
     "ts-node": "^8.10.2",
     "typescript": "^4.0.2",
