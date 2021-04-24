@@ -22,7 +22,7 @@
     "io-ts": "^2.2.10",
     "jest": "^26.2.2",
     "lodash": "^4.17.19",
-    "lodash-es": "^4.17.15",
+    "lodash-es": "^4.17.21",
     "log4js": "^6.3.0",
     "mustache": "^4.0.1",
     "node-mel": "0.0.0-alpha.ee7f3a9e224193ec66631e7f28c2e8dce2884533",

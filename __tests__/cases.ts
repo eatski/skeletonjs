@@ -1,22 +1,24 @@
 export interface Case {
-    directory:string,
-    template:string,
-    patterns:{
-        input:string,
-        expected:string
+    readonly directory:string,
+    readonly template:string,
+    readonly patterns:{
+        readonly input:string,
+        readonly expected:string
     }[]
 }
 
-export const cases : Record<"case1",Case> = {
-    case1:{
-        directory:__dirname + "/case1",
-        template:__dirname + "/case1/template.html",
-        patterns:[
-            {
-                input:__dirname + "/case1/input_1.json",
-                expected:__dirname + "/case1/snap_1.html"
-            }
-        ]
-    }
-}
-    
+const case1: Case = {
+  directory: __dirname + "/case1",
+  template: __dirname + "/case1/template.html",
+  patterns: [
+    {
+      input: __dirname + "/case1/input_1.json",
+      expected: __dirname + "/case1/snap_1.html",
+    },
+  ],
+};
+
+export const cases = {
+    case1
+} as const
+
