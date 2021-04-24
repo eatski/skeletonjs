@@ -9,7 +9,7 @@ export interface Case {
 
 const case1: Case = {
   directory: __dirname + "/case1",
-  template: __dirname + "/case1/template.html",
+  template: "template.html",
   patterns: [
     {
       input: __dirname + "/case1/input_1.json",

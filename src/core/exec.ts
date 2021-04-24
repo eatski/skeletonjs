@@ -1,21 +1,27 @@
-import { InputElement, MarkupInput } from "../domain/input";
+import { InputElement } from "../domain/input";
 import { OutputElement, RenderingOutput } from "../domain/output";
 import { ResolvePostElement } from "../domain/plugin";
 import { Variables, VariablesWrapper } from "../domain/variables";
 import { RenderingContext } from "../domain/context";
 import { resolveText } from "./text";
 import { flatten } from "lodash";
+import { ViewContainer } from "../domain/container";
 
 export const exec = (
-  markup: MarkupInput,
+  entry: string,
   resolvers: Record<string, ResolvePostElement>,
-  variables: Variables
+  variables: Variables,
+  container: ViewContainer
 ): RenderingOutput => {
   const context: RenderingContext = {
     variables: new VariablesWrapper(variables),
+    container
   };
+  const markup = container.getView(entry);
   return {
-    contents: flatten(markup.content.map((e) => convert(e, resolvers, context))),
+    contents: flatten(
+      markup.map((e) => convert(e, resolvers, context))
+    ),
   };
 };
 
