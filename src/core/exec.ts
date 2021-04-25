@@ -25,6 +25,22 @@ export const exec = (
   };
 };
 
+const collectChildren = (
+  element: InputElement,
+  resolvers: Record<string, ResolvePostElement>,
+  context: RenderingContext
+): OutputElement[] => {
+  const fn = (
+    cur: InputElement,
+    acc: OutputElement[] = []
+  ): OutputElement[] => {
+    const output = convert(cur, resolvers, context);
+    const newAcc = output instanceof Array ? [...acc,...output] : [...acc,output]
+    return cur.next ? fn(cur.next, newAcc) : newAcc;
+  };
+  return fn(element);
+};
+
 export const convert = (
   element: InputElement,
   resolvers: Record<string, ResolvePostElement>,
@@ -35,7 +51,8 @@ export const convert = (
       return {
         tag: element.tag,
         attrs: element.attrs,
-        children: flatten(element.children?.map((e) => convert(e, resolvers, context))),
+        children:
+          element.child && collectChildren(element.child, resolvers, context),
       };
 
     case "PostElement":

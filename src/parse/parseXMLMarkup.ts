@@ -1,5 +1,3 @@
-
-import { flatMap } from "lodash";
 import { xml2js, Element } from "xml-js";
 import { MarkupInput, InputElement } from "../domain/input";
 
@@ -11,8 +9,26 @@ export const parseXMLMarkup = (xml: string): MarkupInput => {
   };
 };
 
+
+const xmlElementsToInputElement = (xmlElements: Element[]): InputElement | null => {
+  const fn = (num: number = 0): InputElement | null => {
+    const element = xmlElements[num];
+    if (!element) {
+      return null;
+    }
+    const input = xmlElementToMarkupInput(element);
+    const next = fn(num + 1);
+
+    return next ? {
+      next,
+      ...input
+    } : input
+  };
+  return fn();
+};
+
 const UNEXPECTED = "Unexpected Parser Result";
-export const xmlElementToMarkupInput = (xmlElement: Element): InputElement| InputElement[] => {
+export const xmlElementToMarkupInput = (xmlElement: Element): InputElement => {
   if (xmlElement.type === "text") {
     if (typeof xmlElement.text !== "string") {
       throw new Error("入力エラー: " + xmlElement.text);
@@ -24,7 +40,11 @@ export const xmlElementToMarkupInput = (xmlElement: Element): InputElement| Inpu
   }
   if (!xmlElement.name) {
     if (xmlElement.elements) {
-      return flatMap(xmlElement.elements, xmlElementToMarkupInput);
+      const res = xmlElementsToInputElement(xmlElement.elements);
+      if (res === null) {
+        throw new Error("elements is empty")
+      }
+      return res;
     }
     throw new Error(UNEXPECTED);
   }
@@ -34,18 +54,19 @@ export const xmlElementToMarkupInput = (xmlElement: Element): InputElement| Inpu
       type: "PostElement",
       name: parsed,
       attrs: xmlElement.attributes,
-      children: xmlElement.elements
-        ? flatMap(xmlElement.elements, xmlElementToMarkupInput)
-        : undefined,
+      child:
+        (xmlElement.elements &&
+          xmlElementsToInputElement(xmlElement.elements)) ||
+        undefined,
     };
   }
   return {
     type: "BasicElement",
     tag: xmlElement.name,
     attrs: xmlElement.attributes,
-    children: xmlElement.elements
-      ? flatMap(xmlElement.elements, xmlElementToMarkupInput)
-      : undefined,
+    child:
+      (xmlElement.elements && xmlElementsToInputElement(xmlElement.elements)) ||
+      undefined,
   };
 };
 

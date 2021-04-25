@@ -1,7 +1,7 @@
 import { flatMap } from "lodash";
 import { ResolvePostElement } from "../domain/plugin";
 
-export const resolveIteratable: ResolvePostElement = ({attrs,children},context,next) => {
+export const resolveIteratable: ResolvePostElement = ({attrs,child},context,next) => {
     
     if(!attrs || !attrs["as"] || !(typeof attrs["in"] === "string")){
         throw new Error(`
@@ -10,9 +10,8 @@ export const resolveIteratable: ResolvePostElement = ({attrs,children},context,n
         ` )
     }
 
-
-    if (!children?.length) {
-        return []
+    if (!child) {
+      return [];
     }
     
     const as = attrs["as"];
@@ -23,7 +22,7 @@ export const resolveIteratable: ResolvePostElement = ({attrs,children},context,n
         ...context,
         variables: context.variables.addVariables({ [as]: v }),
       };
-      return flatMap(children,(child) => next(child, newContext));
+      return next(child, newContext);
     });
     
 }

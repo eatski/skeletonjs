@@ -8,17 +8,20 @@ export interface InputBasicElement {
   type: "BasicElement";
   tag: string;
   attrs?: Record<string, string | number | undefined>;
-  children?: InputElement[];
+  child?: InputElement;
+  next?: InputElement;
 }
 
 export interface InputTextElement {
   type: "TextElement";
   content: string;
+  next?: InputElement;
 }
 
 export interface InputPostElement {
   type: "PostElement";
   name: string;
   attrs?: Record<string, string | number | undefined>;
-  children?: InputElement[];
+  child?: InputElement;
+  next?: InputElement;
 }

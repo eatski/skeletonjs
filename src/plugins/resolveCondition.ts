@@ -3,7 +3,7 @@ import { evalExpression, parse } from "node-mel";
 import { ResolvePostElement } from "../domain/plugin";
 
 export const resolveCondition: ResolvePostElement = (
-  { attrs, children },
+  { attrs, child },
   context,
   next
 ) => {
@@ -14,7 +14,7 @@ export const resolveCondition: ResolvePostElement = (
         `);
   }
 
-  if (!children?.length) {
+  if (!child) {
     return [];
   }
 
@@ -22,7 +22,7 @@ export const resolveCondition: ResolvePostElement = (
   const parsed = parse(expression);
   const result = evalExpression(parsed, name => context.variables.getPrimitiveValue(name))
   if (typeof result === "boolean") {
-    return result ? flatMap(children, child => next(child)) : []
+    return result ? next(child) : [];
   }
   throw new Error("result must be boolean.")
 
